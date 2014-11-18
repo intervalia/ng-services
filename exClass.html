@@ -13,7 +13,7 @@
     </style>
   </head>
   <body>
-    <h3>Embeded in the <i>ng-controller=""</i></h3>
+    <h3>Using <i>service</i> and <i>external class</i></h3>
     <div ng-controller="mainController">
         <label>Number 1
             <input ng-model="num1" />
@@ -36,8 +36,29 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
   <script>
+  function someClass(base) {
+    this.base = base;
+  }
+  someClass.prototype = {
+    add: function(num1, num2) { 
+      return parseInt(num1, this.base) + parseInt(num2, this.base);
+    },
+    sub: function(num1, num2) {
+      return parseInt(num1, this.base) - parseInt(num2, this.base);
+    },
+    mul: function(num1, num2) {
+      return parseInt(num1, this.base) * parseInt(num2, this.base);
+    },
+    div: function(num1, num2) {
+      return parseInt(num1, this.base) / parseInt(num2, this.base);
+    }
+  };
+
   angular.module("test", [])
-    .controller("mainController", ["$scope", function($scope) {
+    .factory("fact1", function() {
+      return new someClass(10);
+    })
+    .controller("mainController", ["$scope", "fact1", function($scope, service) {
       $scope.add = add;
       $scope.sub = sub;
       $scope.mul = mul;
@@ -48,16 +69,16 @@
       $scope.answer = 0;
 
       function add() {
-        $scope.answer = parseInt($scope.num1, 10) + parseInt($scope.num2, 10);
+        $scope.answer = service.add($scope.num1, $scope.num2);
       }
       function sub() {
-        $scope.answer = parseInt($scope.num1, 10) - parseInt($scope.num2, 10);
+        $scope.answer = service.sub($scope.num1, $scope.num2);;
       }
       function mul() {
-        $scope.answer = parseInt($scope.num1, 10) * parseInt($scope.num2, 10);
+        $scope.answer = service.mul($scope.num1, $scope.num2);;
       }
       function div() {
-        $scope.answer = parseInt($scope.num1, 10) / parseInt($scope.num2, 10);
+        $scope.answer = service.div($scope.num1, $scope.num2);;
       }
     }]);
   </script>

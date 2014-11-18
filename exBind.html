@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html ng-app="test">
+  <head>
+    <title>sample title</title>
+    <style>
+      * {
+        font-size: 18px;
+      }
+      button:focus {
+        background-color: #000;
+        color: #FFF;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Using events in the <i>factory</i></h3>
+    <div ng-controller="mainController">
+      <fs-selector></fs-selector>
+      <hr/>
+      <fs-output></fs-output>
+    </div>
+  </body>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
+  <script>
+  var eventName_change = "change";
+  var eventName_alert = "alert";
+
+  angular.module("test", [])
+    .factory("fact1", ["$rootScope", "$timeout", function($rootScope, $timeout) {
+      var value;
+      var msgBusScope = $rootScope.$new(true);
+
+      function setVal(val) {
+        value = val;
+        if (val > 0) {
+          if (val === 3) {
+            $broadcast(eventName_change, "Wait for it...");
+            $timeout(function() {
+              $broadcast(eventName_change, val);
+            }, 1000);
+          }
+          else {
+            $broadcast(eventName_change, val);
+          }
+        }
+        else {
+          $broadcast(eventName_alert, "Incorrect value selected");
+        }
+      }
+
+      // Allow controllers or other services to listen to events from this service.
+      function $on(name, fn) {
+        return msgBusScope.$on(name, fn);
+      }
+
+      // Broadcast events to the controllers or other services that are listen to events on this service.
+      function $broadcast(name, data) {
+        msgBusScope.$broadcast(name, data);
+      }
+
+      return {
+        "$on": $on,
+        "setVal": setVal
+      };
+    }])
+    .controller("mainController", ["fact1", function(service) {
+      service.$on(eventName_alert, function(event, msg) {
+        alert("We received the following message:\n"+msg)
+      });
+    }])
+    .controller("fsSelectorController", ["$scope", "fact1", function($scope, service) {
+      $scope.btn = function(val) {
+        service.setVal(val);
+      }
+    }])
+    .directive("fsSelector", function() {
+      return {
+        'restrict': 'E',
+        'replace': true,
+        'controller': 'fsSelectorController',
+        'template': '<span><button ng-click="btn(1)">One</button><button ng-click="btn(2)">Two</button><button ng-click="btn(3)">Three</button><button ng-click="btn(-1)">Alert</button></span>'
+      };
+    })
+    .directive("fsOutput", ["fact1", function(service) {
+      return {
+        'restrict': 'E',
+        'replace': true,
+        'scope': true,
+        'template': '<input type="text">',
+        'link': function ($scope, $el, attrs) {
+          service.$on(eventName_change, function(event, value) {
+            $el.val(value);
+          });
+        }
+      };
+    }]);
+  </script>
+</html>

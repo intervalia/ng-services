@@ -1,0 +1,37 @@
+[
+  {
+    "name": "John",
+    "gender": "M",
+    "points": 10
+  },
+  {
+    "name": "Henry",
+    "gender": "M",
+    "points": 16
+  },
+  {
+    "name": "Sally",
+    "gender": "F",
+    "points": 14
+  },
+  {
+    "name": "Sandra",
+    "gender": "F",
+    "points": 24
+  },
+  {
+    "name": "Peter",
+    "gender": "M",
+    "points": 4
+  },
+  {
+    "name": "Frank",
+    "gender": "M",
+    "points": 12
+  },
+  {
+    "name": "Mary",
+    "gender": "F",
+    "points": 35
+  }
+]
